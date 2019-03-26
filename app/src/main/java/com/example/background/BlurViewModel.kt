@@ -36,6 +36,7 @@ class BlurViewModel : ViewModel() {
     // New instance variable for the WorkInfo
     internal val outputWorkInfos: LiveData<List<WorkInfo>>
 
+
     //In the BlurViewModel constructor
     init {
         // This transformation makes sure that whenever the current work Id changes the WorkInfo
