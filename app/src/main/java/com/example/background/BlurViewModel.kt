@@ -18,6 +18,7 @@ package com.example.background
 
 import android.net.Uri
 import androidx.lifecycle.ViewModel
+import androidx.work.Data
 import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkManager
 import com.example.background.workers.BlurWorker
@@ -52,6 +53,26 @@ class BlurViewModel : ViewModel() {
 
     // one time work request, not periodical
     internal fun applyBlur(blurLevel: Int) {
-        workManager.enqueue(OneTimeWorkRequest.from(BlurWorker::class.java))
+        //one time work request created here,
+        val blurRequest = OneTimeWorkRequest.Builder(BlurWorker::class.java)
+                .setInputData(createInputDataForUri())
+                .build()
+//enqued using work manager
+        workManager.enqueue(blurRequest)
     }
+
+    /**
+     * Creates the input data bundle which includes the Uri to operate on
+     * @return Data which contains the Image Uri as a String
+     */
+    //pass uri for image into a bundle
+    private fun createInputDataForUri(): Data {
+        val builder = Data.Builder()
+        imageUri?.let {
+            builder.putString(KEY_IMAGE_URI, imageUri.toString())
+        }
+        return builder.build()
+    }
+
+
 }
