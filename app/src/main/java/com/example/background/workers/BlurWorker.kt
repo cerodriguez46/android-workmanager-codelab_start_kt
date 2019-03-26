@@ -17,6 +17,12 @@ class BlurWorker(ctx: Context, params: WorkerParameters) : Worker(ctx, params) {
     override fun doWork(): Result {
         val appContext = applicationContext
 
+// Makes a notification when the work starts and slows down the work so that it's easier to
+// see each WorkRequest start, even on emulated devices
+        makeStatusNotification("Blurring image", appContext)
+        sleep()
+
+
         //gets the Uri of the image we passed from data object
         val resourceUri = inputData.getString(KEY_IMAGE_URI)
 
