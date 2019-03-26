@@ -17,6 +17,7 @@
 package com.example.background
 
 import android.net.Uri
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.work.*
 import com.example.background.workers.BlurWorker
@@ -31,6 +32,16 @@ class BlurViewModel : ViewModel() {
 
     //created instance of WorkManger in view model
     private val workManager: WorkManager = WorkManager.getInstance()
+
+    // New instance variable for the WorkInfo
+    internal val outputWorkInfos: LiveData<List<WorkInfo>>
+
+    //In the BlurViewModel constructor
+    init {
+        // This transformation makes sure that whenever the current work Id changes the WorkInfo
+        // the UI is listening to changes
+        outputWorkInfos = workManager.getWorkInfosByTagLiveData(TAG_OUTPUT)
+    }
 
     private fun uriOrNull(uriString: String?): Uri? {
         return if (!uriString.isNullOrEmpty()) {
@@ -77,9 +88,11 @@ class BlurViewModel : ViewModel() {
 
         // Add WorkRequest to save the image to the filesystem
         val save = OneTimeWorkRequestBuilder<SaveImageToFileWorker>()
+                .addTag(TAG_OUTPUT)
                 .build()
 
         continuation = continuation.then(save)
+
 
         // Actually start the work
         continuation.enqueue()
